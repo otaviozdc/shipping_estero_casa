@@ -1,17 +1,17 @@
 // api/frenet-quote.js
 // Proxy server-side para a API de cotação da Frenet.
-// Resolve o bloqueio de CORS e mantém o token da Frenet fora do navegador.
+// Resolve o bloqueio de CORS de forma dinâmica e mantém o token seguro.
 
 module.exports = async function handler(req, res) {
-  // Libera o CORS apenas para o domínio da sua loja
-  const ALLOWED_ORIGIN = 'https://esterocasa.com.br/';
+  // Pega dinamicamente a origem de onde veio a requisição (sua loja Shopify)
+  const origin = req.headers.origin || '*';
 
-  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   try {
-    // Requisição de "preflight" do navegador — só confirma que o CORS está liberado
+    // Requisição de "preflight" do navegador
     if (req.method === 'OPTIONS') {
       res.status(200).end();
       return;
@@ -39,8 +39,6 @@ module.exports = async function handler(req, res) {
     const data = await frenetResponse.json();
     res.status(frenetResponse.status).json(data);
   } catch (err) {
-    // Mesmo em erro, os headers de CORS já foram definidos acima,
-    // então o navegador consegue ler esta resposta de erro.
     res.status(500).json({ error: 'Erro no proxy', details: err.message });
   }
 };
