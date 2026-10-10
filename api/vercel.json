@@ -1,0 +1,8 @@
+{
+  "regions": ["gru1"],
+  "functions": {
+    "api/frenet-quote.js": {
+      "maxDuration": 20
+    }
+  }
+}
